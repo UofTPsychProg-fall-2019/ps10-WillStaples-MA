@@ -57,7 +57,9 @@ ipip.l <- ipip %>%
 # create a boxplot that visualizes BMI distributions according to exercise habits, separately for females and males
 # include at least two customizations to the look of the boxplot 
 # check the documentation for options
-Q1 <- ggplot()
+
+Q1 <- ggplot(ipip, aes(x=BMI, y=exer)) +
+    geom_boxplot()
 Q1
 ggsave('figures/Q1.pdf',units='in',width=4,height=5)
 
@@ -67,7 +69,8 @@ ggsave('figures/Q1.pdf',units='in',width=4,height=5)
 # use geom_smooth to add linear model fit lines, separately for males and females
 Q2a <- ggplot(ipip,aes(x=logMedInc,y=BMI, color=gender))+
     geom_point(size=.5,alpha=.4)+
-    geom_smooth(method='lm')
+    geom_smooth(method='lm', formula = y ~ splines::bs(x, 3), se = FALSE)
+
 Q2a
 ggsave('figures/Q2a.pdf',units='in',width=4,height=5)
 
@@ -85,7 +88,10 @@ ggsave('figures/Q2b.pdf',units='in',width=4,height=5)
 # the default range on the y-axis will be very large given the range of the data
 # add a +coord_cartesian(ylim = c(10, 12)) to rescale it.
 
-Q3 <- ggplot()
+Q3 <- ggplot(ipip, aes(x=gender, y=exer, color=gender)) +
+    stat_summary(fun.y=mean,  geom="bar", fill=NA) +
+    stat_summary(fun.data=mean_se, geom="errorbar", width=.3) +
+    coord_cartesian(ylim = c(10, 12))
 Q3
 ggsave('figures/Q3.pdf',units='in',width=4,height=5)
 
@@ -95,7 +101,9 @@ ggsave('figures/Q3.pdf',units='in',width=4,height=5)
 # for each BMI category, separately for males and females
 # this is a lot to visualize in a single plot! use +facet_wrap(vars(trait)) to generate seperate plots for each personality trait
 
-Q4 <- ggplot()
+Q4 <- ggplot(ipip, aes(x=BMI, y=exer)) +
+    stat_summary(fun.data=mean_cl_boot, geom="pointrange", color="red") +
+    facet_wrap(vars(traits, A1, C1, N1, O1, E1))
 Q4
 ggsave('figures/Q4.pdf',units='in',width=4,height=5)
 
